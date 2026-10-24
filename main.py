@@ -81,7 +81,7 @@ async def userinfo(interaction: discord.Interaction, target: discord.Member = No
 @client.tree.command(name="serverinfo", description="get stats about this server 📊")
 async def serverinfo(interaction: discord.Interaction):
     guild = interaction.guild
-    embed = discord.Embed(
+    embed = discord.Embed
         title=f"📊 {guild.name}",
         color=discord.Color.green()
     )
