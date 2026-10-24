@@ -13,10 +13,6 @@ client = commands.Bot(command_prefix="!", intents=intents)
 @client.event
 async def on_ready():
     print(f"🤖 VerityBot online as {client.user}!")
-    
-    # Custom playing status
-    await client.change_presence(activity=discord.Game(name="/help | Capuchin Redux VR"))
-    
     try:
         synced = await client.tree.sync()
         print(f"✅ Synced {len(synced)} slash commands!")
@@ -83,3 +79,15 @@ async def help_command(interaction: discord.Interaction):
         title="🤖 VerityBot Commands",
         description="here are the starter commands for veritybot:",
         color=discord.Color.gold()
+    )
+    embed.add_field(name="`/ping`", value="check bot status and latency 🏓", inline=False)
+    embed.add_field(name="`/say <message>`", value="make veritybot post a custom message 💬", inline=False)
+    embed.add_field(name="`/userinfo [user]`", value="view profile details 👤", inline=False)
+    embed.add_field(name="`/serverinfo`", value="view server statistics 📊", inline=False)
+    embed.add_field(name="`/help`", value="show this message 📜", inline=False)
+    embed.set_footer(text="VerityBot | Python Edition")
+
+    await interaction.response.send_message(embed=embed)
+
+TOKEN = os.getenv("DISCORD_TOKEN")
+client.run(TOKEN)
