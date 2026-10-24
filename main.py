@@ -29,9 +29,19 @@ async def say(interaction: discord.Interaction, message: str):
     await interaction.channel.send(message)
     await interaction.followup.send("sent! 🚀", ephemeral=True)
 
+@client.tree.command(name="veritysong", description="get the link to the verity song!")
+async def verity_song(interaction: discord.Interaction):
+    # swap out the youtube url below with your exact video link!
+    song_url = "https://www.youtube.com/results?search_query=verity+song"
+    await interaction.response.send_message(f"🎵 check out the verity song here: {song_url}")
+
 @client.tree.command(name="help", description="help command")
 async def help_command(interaction: discord.Interaction):
-    embed = discord.Embed(title="help menu", description="commands: /ping, /say, /help", color=discord.Color.gold())
+    embed = discord.Embed(
+        title="help menu", 
+        description="commands: /ping, /say, /veritysong, /help", 
+        color=discord.Color.gold()
+    )
     await interaction.response.send_message(embed=embed)
 
 client.run(os.getenv("DISCORD_TOKEN"))
