@@ -32,8 +32,8 @@ async def say(interaction: discord.Interaction, message: str):
 @client.tree.command(name="veritysong", description="get the link to the verity song!")
 async def verity_song(interaction: discord.Interaction):
     # swap out the youtube url below with your exact video link!
-    song_url = "https://www.youtube.com/results?search_query=verity+song"
-    await interaction.response.send_message(f"🎵 check out the verity song here: {song_url}")
+    song_url = "https://www.youtube.com/watch?v=tVlKLpxyCBY"
+    await interaction.response.send_message(f"{song_url}")
 
 @client.tree.command(name="help", description="help command")
 async def help_command(interaction: discord.Interaction):
