@@ -30,13 +30,6 @@ async def ping(interaction: discord.Interaction):
     )
     await interaction.response.send_message(embed=embed)
 
-# 2. /say
-@client.tree.command(name="say", description="make veritybot say something 💬")
-@app_commands.describe(message="the message for veritybot to say")
-async def say(interaction: discord.Interaction, message: str):
-    await interaction.response.send_message("message sent! 🚀", ephemeral=True)
-    await interaction.channel.send(message)
-
 # 3. /userinfo
 @client.tree.command(name="userinfo", description="get info about a member 👤")
 @app_commands.describe(target="the user to get info for")
@@ -81,7 +74,6 @@ async def help_command(interaction: discord.Interaction):
         color=discord.Color.gold()
     )
     embed.add_field(name="`/ping`", value="check bot status and latency 🏓", inline=False)
-    embed.add_field(name="`/say <message>`", value="make veritybot post a custom message 💬", inline=False)
     embed.add_field(name="`/userinfo [user]`", value="view profile details 👤", inline=False)
     embed.add_field(name="`/serverinfo`", value="view server statistics 📊", inline=False)
     embed.add_field(name="`/help`", value="show this message 📜", inline=False)
