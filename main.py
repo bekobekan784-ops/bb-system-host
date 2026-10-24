@@ -34,7 +34,7 @@ async def ping(interaction: discord.Interaction):
     )
     await interaction.response.send_message(embed=embed)
 
-# 2. /say (ULTRA FAST FIX ⚡)
+# 2. /say
 @client.tree.command(name="say", description="make veritybot say something 💬")
 @app_commands.describe(message="the message for veritybot to say")
 async def say(interaction: discord.Interaction, message: str):
@@ -71,7 +71,7 @@ async def userinfo(interaction: discord.Interaction, target: discord.Member = No
     )
     embed.set_thumbnail(url=target.display_avatar.url)
     embed.add_field(name="Tag", value=str(target), inline=True)
-    embed.add_field(name="ID", value=target.id, inline=True)
+    embed.add_field(name="ID", value=str(target.id), inline=True)
     embed.add_field(name="Joined Server", value=f"<t:{int(target.joined_at.timestamp())}:R>", inline=False)
     embed.add_field(name="Account Created", value=f"<t:{int(target.created_at.timestamp())}:R>", inline=False)
 
@@ -81,4 +81,12 @@ async def userinfo(interaction: discord.Interaction, target: discord.Member = No
 @client.tree.command(name="serverinfo", description="get stats about this server 📊")
 async def serverinfo(interaction: discord.Interaction):
     guild = interaction.guild
-    embed
+    embed = discord.Embed(
+        title=f"📊 {guild.name}",
+        color=discord.Color.green()
+    )
+    if guild.icon:
+        embed.set_thumbnail(url=guild.icon.url)
+    embed.add_field(name="Server ID", value=str(guild.id), inline=True)
+    embed.add_field(name="Owner", value=f"<@{guild.owner_id}>", inline=True)
+    embed.add_field(
