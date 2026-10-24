@@ -13,6 +13,10 @@ client = commands.Bot(command_prefix="!", intents=intents)
 @client.event
 async def on_ready():
     print(f"🤖 VerityBot online as {client.user}!")
+    
+    # Custom playing status
+    await client.change_presence(activity=discord.Game(name="/help | Capuchin Redux VR"))
+    
     try:
         synced = await client.tree.sync()
         print(f"✅ Synced {len(synced)} slash commands!")
@@ -30,14 +34,32 @@ async def ping(interaction: discord.Interaction):
     )
     await interaction.response.send_message(embed=embed)
 
-# 2. /say
+# 2. /say (ULTRA FAST FIX ⚡)
 @client.tree.command(name="say", description="make veritybot say something 💬")
 @app_commands.describe(message="the message for veritybot to say")
 async def say(interaction: discord.Interaction, message: str):
-    await interaction.response.send_message("message sent! 🚀", ephemeral=True)
+    await interaction.response.defer(ephemeral=True)
     await interaction.channel.send(message)
+    await interaction.followup.send("sent! 🚀", ephemeral=True)
 
-# 3. /userinfo
+# 3. /embed 
+@client.tree.command(name="embed", description="create and post a custom embed message 🎨")
+@app_commands.describe(
+    title="the title of your embed",
+    description="the main message content inside the embed"
+)
+async def embed_command(interaction: discord.Interaction, title: str, description: str):
+    embed = discord.Embed(
+        title=title,
+        description=description,
+        color=discord.Color.gold()
+    )
+    embed.set_footer(text=f"Sent by {interaction.user.name}", icon_url=interaction.user.display_avatar.url)
+    
+    await interaction.response.send_message("embed created! 🎨", ephemeral=True)
+    await interaction.channel.send(embed=embed)
+
+# 4. /userinfo
 @client.tree.command(name="userinfo", description="get info about a member 👤")
 @app_commands.describe(target="the user to get info for")
 async def userinfo(interaction: discord.Interaction, target: discord.Member = None):
@@ -55,39 +77,8 @@ async def userinfo(interaction: discord.Interaction, target: discord.Member = No
 
     await interaction.response.send_message(embed=embed)
 
-# 4. /serverinfo
+# 5. /serverinfo
 @client.tree.command(name="serverinfo", description="get stats about this server 📊")
 async def serverinfo(interaction: discord.Interaction):
     guild = interaction.guild
-    embed = discord.Embed(
-        title=f"📊 {guild.name}",
-        color=discord.Color.green()
-    )
-    if guild.icon:
-        embed.set_thumbnail(url=guild.icon.url)
-    embed.add_field(name="Server ID", value=guild.id, inline=True)
-    embed.add_field(name="Owner", value=f"<@{guild.owner_id}>", inline=True)
-    embed.add_field(name="Total Members", value=str(guild.member_count), inline=True)
-    embed.add_field(name="Created On", value=f"<t:{int(guild.created_at.timestamp())}:F>", inline=False)
-
-    await interaction.response.send_message(embed=embed)
-
-# 5. /help
-@client.tree.command(name="help", description="view all available veritybot commands 📜")
-async def help_command(interaction: discord.Interaction):
-    embed = discord.Embed(
-        title="🤖 VerityBot Commands",
-        description="here are the starter commands for veritybot:",
-        color=discord.Color.gold()
-    )
-    embed.add_field(name="`/ping`", value="check bot status and latency 🏓", inline=False)
-    embed.add_field(name="`/say <message>`", value="make veritybot post a custom message 💬", inline=False)
-    embed.add_field(name="`/userinfo [user]`", value="view profile details 👤", inline=False)
-    embed.add_field(name="`/serverinfo`", value="view server statistics 📊", inline=False)
-    embed.add_field(name="`/help`", value="show this message 📜", inline=False)
-    embed.set_footer(text="VerityBot | Python Edition")
-
-    await interaction.response.send_message(embed=embed)
-
-TOKEN = os.getenv("DISCORD_TOKEN")
-client.run(TOKEN)
+    embed
