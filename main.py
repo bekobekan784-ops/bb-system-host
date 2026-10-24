@@ -13,6 +13,10 @@ client = commands.Bot(command_prefix="!", intents=intents)
 @client.event
 async def on_ready():
     print(f"🤖 VerityBot online as {client.user}!")
+    
+    # Custom playing status
+    await client.change_presence(activity=discord.Game(name="/help | Capuchin Redux VR"))
+    
     try:
         synced = await client.tree.sync()
         print(f"✅ Synced {len(synced)} slash commands!")
@@ -29,6 +33,13 @@ async def ping(interaction: discord.Interaction):
         color=discord.Color.blurple()
     )
     await interaction.response.send_message(embed=embed)
+
+# 2. /say
+@client.tree.command(name="say", description="make veritybot say something 💬")
+@app_commands.describe(message="the message for veritybot to say")
+async def say(interaction: discord.Interaction, message: str):
+    await interaction.response.send_message("message sent! 🚀", ephemeral=True)
+    await interaction.channel.send(message)
 
 # 3. /userinfo
 @client.tree.command(name="userinfo", description="get info about a member 👤")
@@ -72,14 +83,3 @@ async def help_command(interaction: discord.Interaction):
         title="🤖 VerityBot Commands",
         description="here are the starter commands for veritybot:",
         color=discord.Color.gold()
-    )
-    embed.add_field(name="`/ping`", value="check bot status and latency 🏓", inline=False)
-    embed.add_field(name="`/userinfo [user]`", value="view profile details 👤", inline=False)
-    embed.add_field(name="`/serverinfo`", value="view server statistics 📊", inline=False)
-    embed.add_field(name="`/help`", value="show this message 📜", inline=False)
-    embed.set_footer(text="VerityBot | Python Edition")
-
-    await interaction.response.send_message(embed=embed)
-
-TOKEN = os.getenv("DISCORD_TOKEN")
-client.run(TOKEN)
