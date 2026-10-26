@@ -1,14 +1,28 @@
 import discord
 from discord.ext import commands
 import datetime
+import re
 
 # setup intents
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-# bot prefix setup (!h command syntax)
 bot = commands.Bot(command_prefix="!h", intents=intents)
+
+def parse_time(time_str: str) -> int:
+    """Parses time inputs like 10, 10m, 1h, 1d into minutes."""
+    time_str = time_str.replace("<", "").replace(">", "").strip()
+    match = re.match(r"^(\d+)([mhd])?$", time_str.lower())
+    if not match:
+        raise ValueError("Invalid format")
+    amount, unit = match.groups()
+    amount = int(amount)
+    if unit == "h":
+        return amount * 60
+    elif unit == "d":
+        return amount * 1440
+    return amount
 
 @bot.event
 async def on_ready():
@@ -19,38 +33,66 @@ async def on_ready():
 @bot.command(name="ban")
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason: str = "no reason provided"):
-    await member.ban(reason=reason)
-    await ctx.send(f"💥 **{member.name}** was banned by {ctx.author.mention}! 🚪 reason: {reason} 🚫")
+    try:
+        await member.ban(reason=reason)
+        await ctx.send(f"💥 **{member.name}** was banned by {ctx.author.mention}! 🚪 reason: {reason} 🚫")
+    except discord.Forbidden:
+        await ctx.send("❌ i don't have permission to ban this user! ⚙️")
 
 # 🔓 UNBAN COMMAND: !hunban Username#0000 or UserID
 @bot.command(name="unban")
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, *, user_input: str):
     banned_users = [entry async for entry in ctx.guild.bans()]
+    user_input = user_input.strip()
+    
     for ban_entry in banned_users:
         user = ban_entry.user
-        if str(user) == user_input or str(user.id) == user_input:
+        if str(user) == user_input or str(user.id) == user_input or user.name == user_input:
             await ctx.guild.unban(user)
-            await ctx.send(f"✅ **{user.name}** was unbanned! Welcome back (maybe) 😇")
+            await ctx.send(f"✅ **{user.name}** was unbanned by {ctx.author.mention}! welcome back 😇")
             return
+            
     await ctx.send("❌ couldn't find that user in the ban list fr 🤷‍♂️")
 
 # 👢 KICK COMMAND: !hkick @user [reason]
 @bot.command(name="kick")
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason: str = "no reason provided"):
-    await member.kick(reason=reason)
-    await ctx.send(f"👢 **{member.name}** got kicked by {ctx.author.mention}! reason: {reason} 👋")
+    try:
+        await member.kick(reason=reason)
+        await ctx.send(f"👢 **{member.name}** got kicked by {ctx.author.mention}! reason: {reason} 👋")
+    except discord.Forbidden:
+        await ctx.send("❌ i don't have permission to kick this user! ⚙️")
 
-# ⏰ TIMEOUT / MUTE COMMAND: !htimeout @user <minutes> [reason]
+# ⏰ TIMEOUT COMMAND: !htimeout @user <time> [reason]
 @bot.command(name="timeout")
 @commands.has_permissions(moderate_members=True)
-async def timeout(ctx, member: discord.Member, minutes: int, *, reason: str = "no reason provided"):
-    duration = datetime.timedelta(minutes=minutes)
-    await member.timeout(duration, reason=reason)
-    await ctx.send(f"🤫 **{member.name}** was timed out for {minutes} minute(s)! reason: {reason} 🤐")
+async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str = "no reason provided"):
+    try:
+        minutes = parse_time(duration_str)
+    except ValueError:
+        await ctx.send("❌ invalid duration! use numbers like `10`, `10m`, `1h`, or `1d` ⏰")
+        return
 
-# 🧹 PURGE / CLEAR MESSAGES: !hpurge <amount>
+    duration = datetime.timedelta(minutes=minutes)
+    try:
+        await member.timeout(duration, reason=reason)
+        await ctx.send(f"🤫 **{member.name}** was timed out for {minutes} minute(s)! reason: {reason} 🤐")
+    except discord.Forbidden:
+        await ctx.send("❌ i don't have permission to timeout this user! ⚙️")
+
+# 🔊 UNTIMEOUT COMMAND: !huntimeout @user / !hunmute @user
+@bot.command(name="untimeout", aliases=["unmute"])
+@commands.has_permissions(moderate_members=True)
+async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason provided"):
+    try:
+        await member.timeout(None, reason=reason)
+        await ctx.send(f"🔊 **{member.name}** was removed from timeout by {ctx.author.mention}! they can speak again 🗣️✨")
+    except discord.Forbidden:
+        await ctx.send("❌ i don't have permission to remove timeout from this user! ⚙️")
+
+# 🧹 PURGE COMMAND: !hpurge <amount>
 @bot.command(name="purge")
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount: int = 5):
@@ -61,4 +103,18 @@ async def purge(ctx, amount: int = 5):
 @bot.command(name="help")
 async def hamno_help(ctx):
     embed = discord.Embed(
-        title="🤖
+        title="🤖 HAMNO BOT COMMANDS 🛡️",
+        description="dyno who?? hamno in the house 🔥\nUse `!h` prefix for all commands!",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name="!hban @user [reason]", value="bans a rule breaker 💥", inline=False)
+    embed.add_field(name="!hunban user_id / username", value="lifts a ban 🔓", inline=False)
+    embed.add_field(name="!hkick @user [reason]", value="kicks a user out 👢", inline=False)
+    embed.add_field(name="!htimeout @user <time> [reason]", value="timeouts user (e.g. 10m, 1h) ⏰", inline=False)
+    embed.add_field(name="!huntimeout @user", value="removes timeout / unmutes 🔊", inline=False)
+    embed.add_field(name="!hpurge <amount>", value="clears chat messages 🧹", inline=False)
+    await ctx.send(embed=embed)
+
+# paste your bot token below
+import os
+bot.run(os.getenv("TOKEN"))
