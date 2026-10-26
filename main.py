@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import datetime
 import re
+import os
 
 # setup intents
 intents = discord.Intents.default()
@@ -9,6 +10,9 @@ intents.message_content = True
 intents.members = True
 
 bot = commands.Bot(command_prefix="!h", intents=intents)
+
+# 💥 REMOVE DEFAULT HELP COMMAND TO PREVENT CRASHING
+bot.remove_command("help")
 
 def parse_time(time_str: str) -> int:
     """Parses time inputs like 10, 10m, 1h, 1d into minutes."""
@@ -27,7 +31,7 @@ def parse_time(time_str: str) -> int:
 @bot.event
 async def on_ready():
     print(f'🔥 hamno is online and ready as {bot.user}! 🚀')
-    await bot.change_presence(activity=discord.Game(name="moderating with !h 🛡️"))
+    await bot.change_presence(activity=discord.Game(name="Minecraft"))
 
 # 🔨 BAN COMMAND: !hban @user [reason]
 @bot.command(name="ban")
@@ -115,6 +119,4 @@ async def hamno_help(ctx):
     embed.add_field(name="!hpurge <amount>", value="clears chat messages 🧹", inline=False)
     await ctx.send(embed=embed)
 
-# paste your bot token below
-import os
 bot.run(os.getenv("TOKEN"))
