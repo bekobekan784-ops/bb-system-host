@@ -11,7 +11,6 @@ intents.members = True
 bot = commands.Bot(command_prefix="!h", intents=intents)
 
 def parse_time(time_str: str) -> int:
-    """Parses time inputs like 10, 10m, 1h, 1d into minutes."""
     time_str = time_str.replace("<", "").replace(">", "").strip()
     match = re.match(r"^(\d+)([mhd])?$", time_str.lower())
     if not match:
@@ -36,7 +35,6 @@ async def on_ready():
     except Exception as e:
         print(f"❌ error wiping slash commands: {e}")
 
-# 🔨 BAN COMMAND
 @bot.command(name="ban")
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -46,7 +44,6 @@ async def ban(ctx, member: discord.Member, *, reason: str = "no reason provided"
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to ban this user! ⚙️")
 
-# 🔓 UNBAN COMMAND
 @bot.command(name="unban")
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, *, user_input: str):
@@ -62,7 +59,6 @@ async def unban(ctx, *, user_input: str):
             
     await ctx.send("❌ couldn't find that user in the ban list fr 🤷‍♂️")
 
-# 👢 KICK COMMAND
 @bot.command(name="kick")
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -72,7 +68,6 @@ async def kick(ctx, member: discord.Member, *, reason: str = "no reason provided
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to kick this user! ⚙️")
 
-# ⏰ TIMEOUT COMMAND
 @bot.command(name="timeout")
 @commands.has_permissions(moderate_members=True)
 async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str = "no reason provided"):
@@ -89,7 +84,6 @@ async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to timeout this user! ⚙️")
 
-# 🔊 UNTIMEOUT COMMAND
 @bot.command(name="untimeout", aliases=["unmute"])
 @commands.has_permissions(moderate_members=True)
 async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -99,14 +93,12 @@ async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason pro
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to remove timeout from this user! ⚙️")
 
-# 🧹 PURGE COMMAND
 @bot.command(name="purge")
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount: int = 5):
     deleted = await ctx.channel.purge(limit=amount + 1)
     await ctx.send(f"🧹 cleared {len(deleted) - 1} messages real quick! ✨", delete_after=3)
 
-# 📜 HELP COMMAND (Renamed to hamnohelp to avoid all conflicts)
 @bot.command(name="hamnohelp")
 async def hamno_help(ctx):
     embed = discord.Embed(
