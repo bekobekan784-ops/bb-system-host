@@ -4,13 +4,11 @@ import datetime
 import re
 import os
 
-# setup intents
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-# 🚀 pass help_command=None here so it never conflicts!
-bot = commands.Bot(command_prefix="!h", intents=intents, help_command=None)
+bot = commands.Bot(command_prefix="!h", intents=intents)
 
 def parse_time(time_str: str) -> int:
     """Parses time inputs like 10, 10m, 1h, 1d into minutes."""
@@ -31,7 +29,6 @@ async def on_ready():
     print(f'🔥 hamno is online and ready as {bot.user}! 🚀')
     await bot.change_presence(activity=discord.Game(name="moderating with !h 🛡️"))
     
-    # 🧹 WIPE OLD SLASH COMMANDS FROM DISCORD CACHE
     try:
         bot.tree.clear_commands(guild=None)
         await bot.tree.sync()
@@ -39,7 +36,7 @@ async def on_ready():
     except Exception as e:
         print(f"❌ error wiping slash commands: {e}")
 
-# 🔨 BAN COMMAND: !hban @user [reason]
+# 🔨 BAN COMMAND
 @bot.command(name="ban")
 @commands.has_permissions(ban_members=True)
 async def ban(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -49,7 +46,7 @@ async def ban(ctx, member: discord.Member, *, reason: str = "no reason provided"
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to ban this user! ⚙️")
 
-# 🔓 UNBAN COMMAND: !hunban Username#0000 or UserID
+# 🔓 UNBAN COMMAND
 @bot.command(name="unban")
 @commands.has_permissions(ban_members=True)
 async def unban(ctx, *, user_input: str):
@@ -65,7 +62,7 @@ async def unban(ctx, *, user_input: str):
             
     await ctx.send("❌ couldn't find that user in the ban list fr 🤷‍♂️")
 
-# 👢 KICK COMMAND: !hkick @user [reason]
+# 👢 KICK COMMAND
 @bot.command(name="kick")
 @commands.has_permissions(kick_members=True)
 async def kick(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -75,7 +72,7 @@ async def kick(ctx, member: discord.Member, *, reason: str = "no reason provided
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to kick this user! ⚙️")
 
-# ⏰ TIMEOUT COMMAND: !htimeout @user <time> [reason]
+# ⏰ TIMEOUT COMMAND
 @bot.command(name="timeout")
 @commands.has_permissions(moderate_members=True)
 async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str = "no reason provided"):
@@ -92,7 +89,7 @@ async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to timeout this user! ⚙️")
 
-# 🔊 UNTIMEOUT COMMAND: !huntimeout @user / !hunmute @user
+# 🔊 UNTIMEOUT COMMAND
 @bot.command(name="untimeout", aliases=["unmute"])
 @commands.has_permissions(moderate_members=True)
 async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason provided"):
@@ -102,15 +99,15 @@ async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason pro
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to remove timeout from this user! ⚙️")
 
-# 🧹 PURGE COMMAND: !hpurge <amount>
+# 🧹 PURGE COMMAND
 @bot.command(name="purge")
 @commands.has_permissions(manage_messages=True)
 async def purge(ctx, amount: int = 5):
     deleted = await ctx.channel.purge(limit=amount + 1)
     await ctx.send(f"🧹 cleared {len(deleted) - 1} messages real quick! ✨", delete_after=3)
 
-# 📜 HELP COMMAND: !hhelp
-@bot.command(name="help")
+# 📜 HELP COMMAND (Renamed to hamnohelp to avoid all conflicts)
+@bot.command(name="hamnohelp")
 async def hamno_help(ctx):
     embed = discord.Embed(
         title="🤖 HAMNO BOT COMMANDS 🛡️",
