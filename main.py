@@ -9,10 +9,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-bot = commands.Bot(command_prefix="!h", intents=intents)
-
-# 💥 REMOVE DEFAULT HELP COMMAND TO PREVENT CRASHING
-bot.remove_command("help")
+# 🚀 pass help_command=None here so it never conflicts!
+bot = commands.Bot(command_prefix="!h", intents=intents, help_command=None)
 
 def parse_time(time_str: str) -> int:
     """Parses time inputs like 10, 10m, 1h, 1d into minutes."""
@@ -31,7 +29,15 @@ def parse_time(time_str: str) -> int:
 @bot.event
 async def on_ready():
     print(f'🔥 hamno is online and ready as {bot.user}! 🚀')
-    await bot.change_presence(activity=discord.Game(name="Minecraft"))
+    await bot.change_presence(activity=discord.Game(name="moderating with !h 🛡️"))
+    
+    # 🧹 WIPE OLD SLASH COMMANDS FROM DISCORD CACHE
+    try:
+        bot.tree.clear_commands(guild=None)
+        await bot.tree.sync()
+        print("✨ successfully cleared and unsynced old slash commands!")
+    except Exception as e:
+        print(f"❌ error wiping slash commands: {e}")
 
 # 🔨 BAN COMMAND: !hban @user [reason]
 @bot.command(name="ban")
@@ -92,7 +98,7 @@ async def timeout(ctx, member: discord.Member, duration_str: str, *, reason: str
 async def untimeout(ctx, member: discord.Member, *, reason: str = "no reason provided"):
     try:
         await member.timeout(None, reason=reason)
-        await ctx.send(f"🔊 **{member.name}** was removed from timeout by {ctx.author.mention}! they can speak again 🗣️✨")
+        await ctx.send(f"🔊 **{member.name}** was removed from timeout by {ctx.author.mention}! 🗣️✨")
     except discord.Forbidden:
         await ctx.send("❌ i don't have permission to remove timeout from this user! ⚙️")
 
