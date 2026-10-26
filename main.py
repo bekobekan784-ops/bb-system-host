@@ -17,7 +17,7 @@ async def on_ready():
     await client.change_presence(
         activity=discord.Activity(
             type=discord.ActivityType.listening, 
-            name="bbno$ - edamame 🎧"
+            name="bbno$ - Lalala"
         )
     )
     try:
@@ -41,7 +41,7 @@ async def ping(interaction: discord.Interaction):
 @app_commands.describe(message="what should bb$system say?")
 async def say(interaction: discord.Interaction, message: str):
     await interaction.response.defer(ephemeral=True)
-    await interaction.channel.send(f"🗣️ **bb$system says:** {message} 🗣️")
+    await interaction.channel.send(f"{message}")
     await interaction.followup.send("```bar dropped successfully 🎤```", ephemeral=True)
 
 @client.tree.command(name="flex", description="flex your clout in the server")
@@ -51,16 +51,9 @@ async def flex(interaction: discord.Interaction):
         description="```status: 100% certified fresh 🔥\nclout level: OVER 9000 📈\nbag: SECURED 💸```",
         color=discord.Color.green()
     )
-    embed.set_footer(text="bb$system // money talks 🤑")
+    embed.set_footer(text="bb$system // lalalalala")
     await interaction.response.send_message(embed=embed)
 
-@client.tree.command(name="veritysong", description="listen to the ultimate jam")
-async def verity_song(interaction: discord.Interaction):
-    song_url = "https://www.youtube.com/watch?v=tV1KLpxyCBY"
-    embed = discord.Embed(
-        title="🎶 BB$SYSTEM HIT SINGLE",
-        description=f"**banger of the day:** verity song\n🔗 [stream it here!]({song_url}) 🎧",
-        color=discord.Color.magenta()
     )
     embed.set_footer(text="bb$system // certified banger 🔥")
     await interaction.response.send_message(embed=embed)
@@ -75,7 +68,6 @@ async def help_command(interaction: discord.Interaction):
     embed.add_field(name="`/ping`", value="check connection speed ⚡️", inline=False)
     embed.add_field(name="`/say`", value="make the bot speak 🗣️", inline=False)
     embed.add_field(name="`/flex`", value="show off your clout 💰", inline=False)
-    embed.add_field(name="`/veritysong`", value="get the track link 🎵", inline=False)
     embed.add_field(name="`/help`", value="open this menu 📜", inline=False)
     embed.set_footer(text="bb$system // no$ inside 💸")
     await interaction.response.send_message(embed=embed)
